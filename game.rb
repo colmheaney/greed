@@ -6,13 +6,14 @@ class Game
     @players  	= players
     @winner     = ""
   end
-  def is_won?
-    players.any? { |player| player.points >= 3000 }
+  def last_round?
+    players.any? { |player| player.total_points >= 3000 }
   end
   def next_player
     player = @players[@@round % @players.count]
-    @@round += 1
     player.num_of_dice = 5
+    player.points = 0
+    @@round += 1
     return player
   end
   def self.round
