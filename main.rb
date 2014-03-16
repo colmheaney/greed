@@ -17,15 +17,12 @@ def getPlayers
 	players = []
 	puts "How many players are there: "
 	
-	num_players = gets.chomp.to_i 
-	
-	num_players.times do |n|
+	gets.chomp.to_i.times do |n|
 		clear
 		puts "Player #{n+1} name: "
 		players << Player.new(gets.chomp)
 	end
 	players
-
 end
 def getInput(player, dice)
 	symbol = ""
