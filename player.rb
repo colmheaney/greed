@@ -17,12 +17,15 @@ class Player
 		end
 	end	
 	def in_game?
-		@total_points >= 300 || @points >= 300
+		@points >= 300
 	end
 	def num_of_dice
 		@scoring_dice == 5 ? @num_of_dice = 5 : @num_of_dice = @num_of_dice - @scoring_dice
 		@scoring_dice = 0
 		return @num_of_dice
+	end
+	def bank(points)	
+		if self.in_game?; @total_points += points; end
 	end
 
 	private

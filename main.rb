@@ -8,16 +8,22 @@ def getInput(player)
 	gets.downcase[0]
 end
 def putOutput(player, dice)
-	puts "\n#{player.name}: #{player.points} points this round"
 	puts "#{player.name}: #{player.total_points} total points\n\n"
 	puts "Dice values on that throw: #{dice.values}"
 	puts "#{player.num_of_dice} dice left to roll\n\n"
 end
+def greet
+	puts "Initializing game of Greed"
+	puts "=========================="
+	puts "How many players are there?\n"
+end
+def clear
+	puts "\033[2J"
+	puts "\033[0;0H"
+end
 
-puts "Initializing game of Greed"
-puts "=========================="
-puts "How many players are there?\n"
-
+clear
+greet
 players = []
 
 gets.to_i.times do |n|
@@ -33,6 +39,7 @@ puts "Game on!"
 puts "========"
 
 until game.last_round?
+	clear
 	player = game.next_player
 
 	loop do

@@ -7,7 +7,7 @@ class Game
     @winner     = ""
   end
   def last_round?
-    players.any? { |player| player.total_points >= 3000 }
+    players.any? { |player| player.points >= 3000 }
   end
   def next_player
     player = @players[@@round % @players.count]
