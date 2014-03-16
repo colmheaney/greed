@@ -1,22 +1,25 @@
 class Game
-  attr_reader :players, :winner, :next_player
+  attr_reader :players, :next_player
+  attr_accessor :in_end_game
   @@round = 0
 
   def initialize(players)
-    @players  	= players
-    @winner     = ""
+    @players  	 = players
+    @in_end_game = false
   end
   def last_round?
-    players.any? { |player| player.points >= 3000 }
+    players.any? { |player| player.total_points >= 600 }
   end
   def next_player
-    player = @players[@@round % @players.count]
-    player.num_of_dice = 5
-    player.points = 0
+    player = @players[@@round % @players.count] # loop over players continually
+    player.scoring_dice     = 0
+    player.remaining_dice   = 5
+    player.farkle           = false
+    player.points           = 0
     @@round += 1
     return player
   end
-  def self.round
-    @@round
+  def winner
+    players.max_by { |player| player.total_points }
   end
 end

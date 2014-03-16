@@ -3,85 +3,91 @@ require './player.rb'
 require './diceset.rb'
 require './scoreboard.rb'
 
-def getInput(player)
-	puts "Your turn #{player.name}\nEnter command (r)oll, (b)ank?:"
-	gets.downcase[0]
-end
-def putOutput(player, dice)
-	puts "#{player.name}: #{player.total_points} total points\n\n"
-	puts "Dice values on that throw: #{dice.values}"
-	puts "#{player.num_of_dice} dice left to roll\n\n"
-end
-def greet
-	puts "Initializing game of Greed"
-	puts "=========================="
-	puts "How many players are there?\n"
-end
 def clear
 	puts "\033[2J"
-	puts "\033[0;0H"
+	puts "\033[1;1H"
 end
-
-clear
-greet
-players = []
-
-gets.to_i.times do |n|
-	puts 	"Name of player #{n+1}: "
-	name 	= gets.chomp
-	players << Player.new(name)
-end
-
-game = Game.new(players)
-dice = DiceSet.new
-
-puts "Game on!"
-puts "========"
-
-until game.last_round?
+def message(string)
 	clear
+	puts "="*string.length
+	puts string
+	puts "="*string.length
+end
+def getPlayers
+	players = []
+	puts "How many players are there: "
+	
+	num_players = gets.chomp.to_i 
+	
+	num_players.times do |n|
+		clear
+		puts "Player #{n+1} name: "
+		players << Player.new(gets.chomp)
+	end
+	players
+
+end
+def getInput(player, dice)
+	symbol = ""
+	while symbol.empty?
+		clear
+
+		puts "Your turn #{player.name}, (r)oll (b)ank: "
+		puts "Dice values: #{dice.to_s}" unless dice.values.nil?
+		puts "Scoring dice: #{player.scoring_dice}"
+		puts "Remaining dice: #{player.remaining_dice}"
+		puts "Points this round: #{player.points}"
+		puts "Points banked: #{player.total_points}"
+			
+		case gets.chomp[0].downcase 
+		when 'r' then symbol = :roll
+		when 'b' then symbol = :bank
+		else redo
+		end
+	end
+	return symbol
+end
+
+# greet the players
+message("Initializing game of Greed")
+# setup the game
+game = Game.new(getPlayers)
+# setup the diceset
+dice = DiceSet.new
+count = 0
+
+# accept input until game is won
+while true
 	player = game.next_player
 
-	loop do
-		input = getInput(player)
-
-		if 	input == "r"
-			throw_points = player.roll(dice)
-		elsif input == "b"
-			player.total_points += player.points
-			break
-		else
-			redo
+	until player.farkle
+		input = getInput(player, dice)
+		if input == :roll
+			points = player.roll(dice)
+			if points != 0
+				# add points for the current round
+				player.accum(points)
+			else
+				# if player doesn't achieve a score, they have farkeld
+				player.farkle = true
+			end
+		# player can't bank unless they have accumulated over 300 points this round	
+		elsif input == :bank and player.points >= 300
+			player.bank(player.points)
+			break # next player
 		end
-
-		putOutput(player, dice)
-		break if !player.in_game? || player.num_of_dice == 0 || throw_points == 0
+	end
+	# if last round then cycle through the remaining players one more time
+	if game.in_end_game
+		count += 1
+		if count == game.players.count - 1
+			break # end game
+		end
+	end
+	# flag set to true if a player achieves over 3000
+	if game.last_round?
+		game.in_end_game = true
 	end
 end
 
-# puts "==========="
-# puts "Last Round!"
-
-# remaining_players = players.select { |player| player.total_points < 3000 }
-
-# remaining_players.each do |player|
-# 	player = game.next_player
-
-# 	input = getInput(player)
-
-# 	loop do
-# 		if 	input == "r"
-# 			throw_points = player.roll(dice)
-# 		elsif input == "s"
-# 			player.total_points += player.points
-# 			break
-# 		else
-# 			redo
-# 		end
-# 		putOutput(player, dice)
-# 		break if !player.in_game? || player.num_of_dice == 0 || throw_points == 0
-# 	end
-# end
-
-
-
+message("Game over. #{game.winner.name} wins!")
