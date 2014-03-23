@@ -1,28 +1,44 @@
 class Player
-	attr_reader :name, :total_points
-	attr_accessor :remaining_dice, :scoring_dice, :farkle, :points
+	attr_reader 	:name, :total_points, :id, :dice
+	attr_accessor 	:remaining_dice, :scoring_dice, :farkle, :round_points
 	MAX_DICE = 5
+	@@id 	 = 0
 
 	def initialize(name)
 		@name			= name
+	    @dice        	= DiceSet.new
 		@total_points  	= 0
+		@points 		= 0
+ 		@id 			= @@id += 1
 	end
-	def roll(dice)
-		score(dice.roll(remaining_dice)) 
+	def roll
+		remaining_dice # can't seem to call method as a parameter so need to call it here
+		@points = score(@dice.roll(remaining_dice)) 
 	end	
 	def bank(points)	
 		@total_points += points
-		@points = 0
+		@round_points = 0
 	end
-	def accum(points)
-		@points += points
+	def accum_points
+		@round_points += @points
 	end
 	def remaining_dice
 		if @scoring_dice == MAX_DICE
-			@remaining_dice, @scoring_dice = MAX_DICE, 0 # reset if player scores with all dice
+			@remaining_dice = MAX_DICE
+			@scoring_dice = 0 # reset if player scores with all dice
 		else
 			@remaining_dice
 		end
+	end
+	def to_json
+	    {
+	      :player         => @name,
+	      :dice           => @dice.values,
+	      :total_points   => @total_points,
+	      :points         => @round_points,
+	      :remaining_dice => @remaining_dice,
+	      :scoring_dice   => @scoring_dice
+	    }
 	end
 
 	private

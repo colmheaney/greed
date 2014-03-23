@@ -1,28 +1,39 @@
+require 'em-websocket'
+
 class Game
-  attr_reader :players, :next_player
-  attr_accessor :in_end_game
-  THRESHOLD_SCORE = 3000
-  MAX_DICE        = 5
-  @@round         = 0
+  attr_reader   :players, :next_player, :channel
+  attr_accessor :last_round
+  MAX_DICE = 5
 
   def initialize(players)
-    @players  	 = players
-    @in_end_game = false
+    @channel     = EM::Channel.new
+    @players     = players
+    @last_round  = false
+    @won         = false
+    @round       = 0
+    @count       = 0
   end
-  def last_round?
-    players.any? { |player| player.total_points >= THRESHOLD_SCORE }
+  def won?
+    if last_round and @count == players.count - 1
+      return true
+    elsif last_round and @count != players.count - 1
+      @count += 1
+      return false
+    end
   end
   def next_player
-    player = @players[@@round % @players.count] # loop over players continually
+    player = @players[@round % @players.count] # loop over players continually
     # reset everything
-    player.scoring_dice     = 0
     player.remaining_dice   = MAX_DICE
+    player.scoring_dice     = 0
+    player.round_points     = 0
     player.farkle           = false
-    player.points           = 0
-    @@round += 1
+    @round += 1
     return player
   end
+  # TODO: what to do in event of a tie?
   def winner
     players.max_by { |player| player.total_points }
   end
 end
+  
