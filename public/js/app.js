@@ -17,7 +17,8 @@ $('#new').click(function() {
     $('#player').text(result.player);
     $('#non_scoring_dice').text(result.dice[1]);
     $('#dice_values').text(result.dice);
-    $('#points').text(result.points);
+    $('#round_points').text(result.round_points);
+    $('#roll_points').text(result.roll_points);
     $('#total_points').text(result.total_points);
   };
 
@@ -32,7 +33,7 @@ $('#new').click(function() {
     var values = $("input:checkbox:checked").map(function(){
       return $(this).val();
     }).get(); 
-    ws.send('{ "get_points": ['+values+']}');
+    ws.send('{ "check_points": ['+values+']}');
     console.log(values);
   });
 });

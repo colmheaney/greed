@@ -13,7 +13,7 @@ class Player
 	end
 	def roll
 		remaining_dice # can't seem to call method as a parameter so need to call it here
-		@points = score(@dice.roll(remaining_dice)) 
+		score(@dice.roll(remaining_dice)) 
 	end	
 	def bank(points)	
 		@total_points += points
@@ -36,24 +36,24 @@ class Player
 	      :dice           => @dice.scoring_dice,
 	      :dice_values	  => @dice.values,
 	      :total_points   => @total_points,
-	      :points         => @round_points,
+	      :round_points   => @round_points,
+	      :roll_points    => @points,
 	      :remaining_dice => @remaining_dice,
 	      :scoring_dice   => @scoring_dice
 	    }
 	end
 
 	def score(num_of_dice)
-		sum = 0
 		num_of_dice.group_by { |i| i }.each do |key, value|
 			if value.count >= 3
-			  key == 1 ? sum += 1000 : sum += 100 * key
+			  key == 1 ? @points += 1000 : @points += 100 * key
 			  value.pop(3) # ditch triple values so they're not counted twice
 			  @scoring_dice += 3
 			end
-			if key == 1; sum += value.count * 100; @scoring_dice += value.count end
-			if key == 5; sum += value.count * 50;  @scoring_dice += value.count end
+			if key == 1; @points += value.count * 100; @scoring_dice += value.count end
+			if key == 5; @points += value.count * 50;  @scoring_dice += value.count end
 		end
 		@remaining_dice = MAX_DICE - @scoring_dice
-		return sum
+		return @points
 	end
 end

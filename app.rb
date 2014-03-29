@@ -1,6 +1,8 @@
 require './init.rb'
 
 EventMachine.run do
+  include Helpers
+
   class App < Sinatra::Base
 
       get '/' do
@@ -18,37 +20,18 @@ EventMachine.run do
         game    = Game.new([p1,p2,p3])
         player  = game.next_player
 
-        game.channel.subscribe { |msg| ws.send msg }
+        sid = game.channel.subscribe { |msg| ws.send msg }
 
         ws.onmessage { |msg|
 
           message = JSON.parse(msg)
 
             if message['msg'] == 'roll'
-              if player.roll != 0
-                game.channel.push JSON.generate(player.to_json)
-                player.accum_points
-              else
-                game.channel.push JSON.generate(player.to_json)
-                player = game.next_player
-                if game.won?
-                  game.channel.push game.winner.name + ' wins'
-                end
-              end
-            end
-            if message['msg'] == 'bank' and player.round_points >= 300
-              player.bank(player.round_points)
-              game.channel.push JSON.generate(player.to_json)
-              if player.total_points >= 600
-                game.last_round = true
-              end
-              player = game.next_player
-              if game.won?
-                game.channel.push game.winner.name + ' wins'
-              end
-            end
-            if message.include?('get_points')
-              $log.debug player.score(message['get_points'])
+              Helpers::roll(player, game)
+            elsif message['msg'] == 'bank'
+              Helpers::bank(player, game)
+            elsif message.include?('check_points')
+              Helpers::check_points(message, player, game)              
             end
         }
 
