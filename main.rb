@@ -52,7 +52,7 @@ message("Initializing game of Greed")
 game = Game.new(getPlayers)
 
 # accept input until game is won
-until game.won
+until game.won?
 	player = game.next_player
 
 	until player.farkle
@@ -61,7 +61,7 @@ until game.won
 			points = player.roll
 			if points != 0
 				# add points for the current round
-				player.accum(points)
+				player.accum_points
 			else
 				# if player doesn't achieve a score, they have farkeld
 				player.farkle = true

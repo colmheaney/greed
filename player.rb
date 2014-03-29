@@ -1,7 +1,7 @@
 class Player
 	attr_reader 	:name, :total_points, :id, :dice
 	attr_accessor 	:remaining_dice, :scoring_dice, :farkle, :round_points
-	MAX_DICE = 5
+	MAX_DICE = 6
 	@@id 	 = 0
 
 	def initialize(name)
@@ -33,7 +33,8 @@ class Player
 	def to_json
 	    {
 	      :player         => @name,
-	      :dice           => @dice.values,
+	      :dice           => @dice.scoring_dice,
+	      :dice_values	  => @dice.values,
 	      :total_points   => @total_points,
 	      :points         => @round_points,
 	      :remaining_dice => @remaining_dice,
@@ -41,7 +42,6 @@ class Player
 	    }
 	end
 
-	private
 	def score(num_of_dice)
 		sum = 0
 		num_of_dice.group_by { |i| i }.each do |key, value|

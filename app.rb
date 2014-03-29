@@ -22,17 +22,23 @@ EventMachine.run do
 
         ws.onmessage { |msg|
 
-            if msg == 'roll'
+          message = JSON.parse(msg)
+
+            if message['msg'] == 'roll'
               if player.roll != 0
+                game.channel.push JSON.generate(player.to_json)
                 player.accum_points
               else
+                game.channel.push JSON.generate(player.to_json)
                 player = game.next_player
                 if game.won?
                   game.channel.push game.winner.name + ' wins'
                 end
               end
-            elsif msg == 'bank' and player.round_points >= 300
+            end
+            if message['msg'] == 'bank' and player.round_points >= 300
               player.bank(player.round_points)
+              game.channel.push JSON.generate(player.to_json)
               if player.total_points >= 600
                 game.last_round = true
               end
@@ -41,7 +47,9 @@ EventMachine.run do
                 game.channel.push game.winner.name + ' wins'
               end
             end
-            game.channel.push JSON.generate(player.to_json)
+            if message.include?('get_points')
+              $log.debug player.score(message['get_points'])
+            end
         }
 
         ws.onclose {

@@ -3,7 +3,7 @@ require 'em-websocket'
 class Game
   attr_reader   :players, :next_player, :channel
   attr_accessor :last_round
-  MAX_DICE = 5
+  MAX_DICE = 6
 
   def initialize(players)
     @channel     = EM::Channel.new
