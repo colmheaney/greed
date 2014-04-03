@@ -4,22 +4,26 @@ $('#new').click(function() {
   ws.onmessage = function(evt) {
     var result = JSON.parse(evt.data);
 
-    $('.checkbox_container').remove();
+    if(result.hasOwnProperty('dice')){
+      $('.checkbox_container').remove();
 
-    for(var die in result.dice[0]){
-      $('#taglist').append(
-        '<div class="checkbox_container">'+
-          '<input type="checkbox" class="checkbox" value="'+result.dice[0][die]+'">'+result.dice[0][die]+
-        '</div>'
-        );
-    }
+      for(var die in result.dice[0]){
+        $('#taglist').append(
+          '<div class="checkbox_container">'+
+            '<input type="checkbox" class="checkbox" value="'+result.dice[0][die]+'">'+result.dice[0][die]+
+          '</div>'
+          );
+      }
 
-    $('#player').text(result.player);
-    $('#non_scoring_dice').text(result.dice[1]);
-    $('#dice_values').text(result.dice);
-    $('#round_points').text(result.round_points);
-    $('#roll_points').text(result.roll_points);
-    $('#total_points').text(result.total_points);
+      $('#player').text(result.player);
+      $('#non_scoring_dice').text(result.dice[1]);
+      $('#round_points').text(result.round_points);
+      $('#total_points').text(result.total_points);
+      $('#roll_points').text(result.roll_points);
+    };
+    if (result.hasOwnProperty('roll_points')) {
+      $('#roll_points').text(result.roll_points);
+    };
   };
 
   $("#roll").click(function() {
@@ -33,7 +37,7 @@ $('#new').click(function() {
     var values = $("input:checkbox:checked").map(function(){
       return $(this).val();
     }).get(); 
-    ws.send('{ "check_points": ['+values+']}');
+    ws.send('{ "get_points": ['+values+']}');
     console.log(values);
   });
 });

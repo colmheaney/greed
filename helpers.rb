@@ -1,17 +1,18 @@
 module Helpers
 
   def roll(player, game)
-    if player.roll != 0
-      game.channel.push JSON.generate(player.to_json)
+    player.roll
+    if player.roll_points != 0
       player.accum_points
-    else
       game.channel.push JSON.generate(player.to_json)
+    else
       player = game.next_player
+      game.channel.push JSON.generate(player.to_json)
       check_won(game)
     end
   end
   def bank(player, game)
-    if player.round_points >= 300
+    if player.round_points >= 300 or player.roll_points >= 300
       player.bank(player.round_points)
       game.channel.push JSON.generate(player.to_json)
       if player.total_points >= 600
@@ -22,8 +23,8 @@ module Helpers
     end
   end
   def check_points(message, player, game)
-      $log.debug(player.score(message['check_points']))
-      game.channel.push JSON.generate(player.to_json)
+      player.score(message['get_points'])
+      game.channel.push JSON.generate({:roll_points => player.roll_points})
   end
   def check_won(game)
     if game.won?

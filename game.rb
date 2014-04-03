@@ -27,7 +27,7 @@ class Game
     player.remaining_dice   = MAX_DICE
     player.scoring_dice     = 0
     player.round_points     = 0
-    player.farkle           = false
+    player.roll_points      = 0
     @round += 1
     return player
   end

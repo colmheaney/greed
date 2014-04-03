@@ -25,13 +25,38 @@ EventMachine.run do
         ws.onmessage { |msg|
 
           message = JSON.parse(msg)
+            if message['msg'] == 'roll' 
+              player.roll
+              if player.dice.scoring_dice[0].empty?
+                game.channel.push JSON.generate(player.to_json)
+                player = game.next_player
+                check_won(game)
+              else
+                player.accum_points
+                game.channel.push JSON.generate(player.to_json)
+              end
 
-            if message['msg'] == 'roll'
-              Helpers::roll(player, game)
             elsif message['msg'] == 'bank'
-              Helpers::bank(player, game)
-            elsif message.include?('check_points')
-              Helpers::check_points(message, player, game)              
+              player.accum_points
+              if player.round_points >= 300
+                player.bank
+                game.channel.push JSON.generate(player.to_json)
+                if player.total_points >= 600
+                  game.last_round = true
+                end
+                player = game.next_player
+                check_won(game)
+              end
+
+            elsif message.include?('get_points')
+              player.score(message['get_points'])
+              game.channel.push JSON.generate({:roll_points => player.roll_points})            
+            end
+
+            def check_won(game)
+              if game.won?
+                game.channel.push game.winner.name + ' wins'
+              end 
             end
         }
 
