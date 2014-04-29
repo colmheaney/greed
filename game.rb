@@ -28,6 +28,7 @@ class Game
     player.scoring_dice     = 0
     player.round_points     = 0
     player.roll_points      = 0
+    player.first_roll       = true
     @round += 1
     return player
   end

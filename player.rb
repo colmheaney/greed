@@ -1,18 +1,17 @@
 class Player
-	attr_reader 	:name, :total_points, :id, :dice
-	attr_accessor 	:remaining_dice, :scoring_dice, :round_points, :roll_points
+	attr_reader 	  :name, :total_points, :id, :dice
+	attr_accessor 	:remaining_dice, :scoring_dice, :round_points, :roll_points, :first_roll
 	MAX_DICE = 6
 	@@id 	 = 0
 
 	def initialize(name)
-		@name			= name
-	    @dice        	= DiceSet.new
-		@total_points  	= 0
- 		@id 			= @@id += 1
+    @dice        	= DiceSet.new
+    @name			    = name
+		@total_points = 0
+ 		@id 			    = @@id += 1
 	end
 	def roll
 		dice = remaining_dice 
-		$log.debug dice
 		@dice.roll(dice)
 	end	
 	def bank
@@ -22,7 +21,7 @@ class Player
 	def accum_points
 		@round_points += @roll_points
 		@roll_points = 0
-	end
+  end
 	def remaining_dice
 		@remaining_dice = @remaining_dice - @scoring_dice
 		if @remaining_dice == 0

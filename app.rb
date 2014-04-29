@@ -25,8 +25,17 @@ EventMachine.run do
         ws.onmessage { |msg|
 
           message = JSON.parse(msg)
-            if message['msg'] == 'roll' 
+
+#          $log.info "roll_points"
+#          $log.debug player.roll_points
+#          $log.info "round_points"
+#          $log.debug player.round_points
+#          $log.info "first_roll"
+#          $log.debug player.first_roll
+
+            if message['msg'] == 'roll' and (player.roll_points != 0 and not player.first_roll) or (player.roll_points == 0 and player.first_roll)
               player.roll
+              player.first_roll = false
               if player.dice.scoring_dice[0].empty?
                 game.channel.push JSON.generate(player.to_json)
                 player = game.next_player
@@ -37,12 +46,12 @@ EventMachine.run do
               end
 
             elsif message['msg'] == 'bank'
-              player.accum_points
-              if player.round_points >= 300
+              if player.round_points + player.roll_points >= 300
+                player.accum_points
                 player.bank
                 game.channel.push JSON.generate(player.to_json)
                 if player.total_points >= 600
-                  game.last_round = true
+                game.last_round = true
                 end
                 player = game.next_player
                 check_won(game)

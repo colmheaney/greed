@@ -1,2 +1,6 @@
 *.sublime-project
 *.sublime-workspace
+*~
+*.rpsec
+*.autotest
+/logs/*
