@@ -1,6 +1,8 @@
 require './init.rb'
 
 EventMachine.run do
+  include Helpers
+
   class App < Sinatra::Base
 
       get '/' do
@@ -18,37 +20,52 @@ EventMachine.run do
         game    = Game.new([p1,p2,p3])
         player  = game.next_player
 
-        game.channel.subscribe { |msg| ws.send msg }
+        sid = game.channel.subscribe { |msg| ws.send msg }
 
         ws.onmessage { |msg|
 
           message = JSON.parse(msg)
 
-            if message['msg'] == 'roll'
-              if player.roll != 0
-                game.channel.push JSON.generate(player.to_json)
-                player.accum_points
-              else
+#          $log.info "roll_points"
+#          $log.debug player.roll_points
+#          $log.info "round_points"
+#          $log.debug player.round_points
+#          $log.info "first_roll"
+#          $log.debug player.first_roll
+
+            if message['msg'] == 'roll' and (player.roll_points != 0 and not player.first_roll) or (player.roll_points == 0 and player.first_roll)
+              player.roll
+              player.first_roll = false
+              if player.dice.scoring_dice[0].empty?
                 game.channel.push JSON.generate(player.to_json)
                 player = game.next_player
-                if game.won?
-                  game.channel.push game.winner.name + ' wins'
-                end
+                check_won(game)
+              else
+                player.accum_points
+                game.channel.push JSON.generate(player.to_json)
               end
-            end
-            if message['msg'] == 'bank' and player.round_points >= 300
-              player.bank(player.round_points)
-              game.channel.push JSON.generate(player.to_json)
-              if player.total_points >= 600
+
+            elsif message['msg'] == 'bank'
+              if player.round_points + player.roll_points >= 300
+                player.accum_points
+                player.bank
+                game.channel.push JSON.generate(player.to_json)
+                if player.total_points >= 600
                 game.last_round = true
+                end
+                player = game.next_player
+                check_won(game)
               end
-              player = game.next_player
+
+            elsif message.include?('get_points')
+              player.score(message['get_points'])
+              game.channel.push JSON.generate({:roll_points => player.roll_points})            
+            end
+
+            def check_won(game)
               if game.won?
                 game.channel.push game.winner.name + ' wins'
-              end
-            end
-            if message.include?('get_points')
-              $log.debug player.score(message['get_points'])
+              end 
             end
         }
 
