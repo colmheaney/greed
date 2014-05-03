@@ -25,13 +25,6 @@ EventMachine.run do
 
           message = JSON.parse(msg)
 
-#          $log.info "roll_points"
-#          $log.debug player.roll_points
-#          $log.info "round_points"
-#          $log.debug player.round_points
-#          $log.info "first_roll"
-#          $log.debug player.first_roll
-
             if message['msg'] == 'roll' and (player.roll_points != 0 and not player.first_roll) or (player.roll_points == 0 and player.first_roll)
               player.roll
               player.first_roll = false
