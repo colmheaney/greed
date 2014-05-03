@@ -10,7 +10,6 @@ require 'logger'
 require './game.rb'
 require './player.rb'
 require './diceset.rb'
-require './helpers.rb'
 
 Dir.mkdir('logs') unless File.exist?('logs')
 
