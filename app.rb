@@ -1,7 +1,6 @@
 require './init.rb'
 
 EventMachine.run do
-  include Helpers
 
   class App < Sinatra::Base
 
