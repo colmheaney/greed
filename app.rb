@@ -64,7 +64,7 @@ EventMachine.run do
 
             def check_won(game)
               if game.won?
-                game.channel.push game.winner.name + ' wins'
+                game.channel.push Player.winner(game).name + ' wins'
               end 
             end
         }

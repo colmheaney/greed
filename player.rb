@@ -5,10 +5,15 @@ class Player
 	@@id 	 = 0
 
 	def initialize(name)
-    @dice        	= DiceSet.new
-    @name			    = name
-		@total_points = 0
- 		@id 			    = @@id += 1
+    @dice           	= DiceSet.new
+    @name	    		    = name
+    @total_points     = 0
+    @id 			        = @@id += 1
+    @remaining_dice   = MAX_DICE
+    @scoring_dice     = 0
+    @round_points     = 0
+    @roll_points      = 0
+    @first_roll       = true
 	end
 	def roll
 		dice = remaining_dice 
@@ -54,4 +59,7 @@ class Player
 		end
 		return @roll_points
 	end
+  def self.winner(game)
+    game.players.max_by { |player| player.total_points }
+  end
 end

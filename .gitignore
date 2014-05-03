@@ -1,10 +1,5 @@
-*.sublime-project
-*.sublime-workspace
-<<<<<<< HEAD
 *.log
-=======
 *~
 *.rpsec
 *.autotest
 /logs/*
->>>>>>> new_scoring_method

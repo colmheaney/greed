@@ -32,9 +32,5 @@ class Game
     @round += 1
     return player
   end
-  # TODO: what to do in event of a tie?
-  def winner
-    players.max_by { |player| player.total_points }
-  end
 end
   
