@@ -7,10 +7,10 @@ class Player
 	def initialize(name)
     @dice           	= DiceSet.new
     @name	    		    = name
-    @total_points     = 0
     @id 			        = @@id += 1
     @remaining_dice   = MAX_DICE
     @scoring_dice     = 0
+    @total_points     = 0
     @round_points     = 0
     @roll_points      = 0
     @first_roll       = true

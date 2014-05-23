@@ -15,18 +15,27 @@
     </div>
     <div class='container'>
 
+      <h3 id="player"></h3>
+      <p>Scoring dice: <span id="scoring_dice"></span></p>
+
       <div id="taglist"></div>
 
-      <form class='form-stacked' method='post' action='/game'>
+      <p>Non-Scoring dice: <span id="non_scoring_dice"></span></p>
+      <p>Roll Points: <span id="roll_points"></span></p>
+      <p>Round Points: <span id="round_points"></span></p>
+      <p>Total Points: <span id="total_points"></span></p>
+
+      <form class='form-stacked'>
         <div class='form-actions'>
           <div>
-            <input name='player1' type='text' />
-            <input name='player2' type='text' />
-            <input name='submit' value='Play!' type='submit'>
+            <input class='btn' id="new" type='button' value="new game" />
+            <input class='btn' id="roll" type='button' value="roll" />
+            <input class='btn' id="bank" type='button' value="bank" />
           </div>
         </div>
       </form>
     </div>
     <script src='http://code.jquery.com/jquery-1.7.2.min.js'></script>
+    <script src='/js/app.js'></script>
   </body>
 </html>
